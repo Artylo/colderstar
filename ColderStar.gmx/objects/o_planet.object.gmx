@@ -25,63 +25,16 @@
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Initialization
+            <string>///Variables
 
-//Image
-image_index = 0;
-
-//Scale
-scale = random_range(0.1,3);
-
-//Color
-h = random(255);
-s = random(255);
-v = random(255);
-colour = make_colour_hsv(h,s,v);
-
-</string>
-          </argument>
-        </arguments>
-      </action>
-      <action>
-        <libid>1</libid>
-        <id>603</id>
-        <kind>7</kind>
-        <userelative>0</userelative>
-        <isquestion>0</isquestion>
-        <useapplyto>-1</useapplyto>
-        <exetype>2</exetype>
-        <functionname></functionname>
-        <codestring></codestring>
-        <whoName>self</whoName>
-        <relative>0</relative>
-        <isnot>0</isnot>
-        <arguments>
-          <argument>
-            <kind>1</kind>
-            <string>///Generate Planets
-planet_num = irandom(10);
-planets[0] = 0;
-var rx, ry;
-var sun_size = sprite_get_width(image_index)*scale+64;
-for(var i = 0; i &lt; planet_num; i++)
-{
-    rx = x + lengthdir_x(random_range(sun_size,1000),irandom(360));
-    ry = y + lengthdir_y(random_range(sun_size,1000),irandom(360));
-    planets[i] = instance_create(rx,ry,o_planet);
-    with(planets[i])
-    {
-        parent_sun = other.id;
-        instance_deactivate_object(id);
-    }
-    instance_deactivate_object(planets[i]);
-}
+parent_sun_distance = 0;
+orbit_speed = choose(1,-1)*random_range(0.1,5);
 </string>
           </argument>
         </arguments>
       </action>
     </event>
-    <event eventtype="8" enumb="0">
+    <event eventtype="3" enumb="1">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -98,12 +51,14 @@ for(var i = 0; i &lt; planet_num; i++)
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw Self
-if(director.zoomscale &lt; 350) draw_circle_colour(x,y,scale*64,colour,c_white,false);
+            <string>///Variables
+parent_sun_distance = point_distance(parent_sun.x,parent_sun.y,x,y);
 </string>
           </argument>
         </arguments>
       </action>
+    </event>
+    <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
         <id>603</id>
@@ -120,42 +75,8 @@ if(director.zoomscale &lt; 350) draw_circle_colour(x,y,scale*64,colour,c_white,f
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Draw Planet Orbits
-
-if(director.zoomscale &lt; 350)
-{
-    if(planet_num&gt;0)
-    {
-        var planet_distance = 0;
-        for(var i = 0; i &lt; planet_num; i++)
-        {
-            planet_distance = point_distance(x,y,planets[i].x,planets[i].y);
-            draw_circle_colour(x,y,planet_distance,planets[i].image_blend,planets[i].image_blend,1);
-        }
-    }
-}
-else
-{
-    var maxsiz = point_distance(x,y,planets[0].x,planets[0].y);
-    var planet_distance = 0;
-    if(planet_num&gt;0)
-    {
-        for(var i = 0; i &lt; planet_num; i++)
-        {
-            planet_distance = point_distance(x,y,planets[i].x,planets[i].y);
-            if(planet_distance &gt; maxsiz)
-            {
-                maxsiz = planet_distance;
-            }
-        }
-    }
-    else
-    {
-        maxsiz = 128;
-    }
-    draw_circle(x,y,maxsiz,false);
-    
-}
+            <string>///Orbit around sun
+orbit(parent_sun.x,parent_sun.y,parent_sun_distance,orbit_speed);
 </string>
           </argument>
         </arguments>

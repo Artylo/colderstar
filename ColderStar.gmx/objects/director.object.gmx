@@ -31,7 +31,7 @@ edgespace = 64;
 edgespeed =  4;
 
 zoomspeed = 0.1;
-zoomscale = 1;
+zoomscale = 6;
 
 mouse_wx = display_mouse_get_x();
 mouse_wy = display_mouse_get_y();
@@ -67,6 +67,37 @@ scale = 200;
         </arguments>
       </action>
     </event>
+    <event eventtype="3" enumb="2">
+      <action>
+        <libid>1</libid>
+        <id>603</id>
+        <kind>7</kind>
+        <userelative>0</userelative>
+        <isquestion>0</isquestion>
+        <useapplyto>-1</useapplyto>
+        <exetype>2</exetype>
+        <functionname></functionname>
+        <codestring></codestring>
+        <whoName>self</whoName>
+        <relative>0</relative>
+        <isnot>0</isnot>
+        <arguments>
+          <argument>
+            <kind>1</kind>
+            <string>///Sun Activation
+instance_deactivate_region(view_xview,view_yview,view_xview+view_wview,view_yview+view_hview,false,true);
+instance_activate_region(view_xview,view_yview,view_xview+view_wview,view_yview+view_hview,true);
+
+//Disable Planets
+if(zoomscale &gt; 60)
+{
+    instance_deactivate_object(o_planet);
+}
+</string>
+          </argument>
+        </arguments>
+      </action>
+    </event>
     <event eventtype="3" enumb="0">
       <action>
         <libid>1</libid>
@@ -86,18 +117,62 @@ scale = 200;
             <kind>1</kind>
             <string>///Camera Movement
 
-//Inputs
-var zoom_in  =   mouse_wheel_up();
-var zoom_out = mouse_wheel_down();
+//Inputs - Zoom
+var zoom_in  =   mouse_wheel_up() or keyboard_check(vk_up);
+var zoom_out = mouse_wheel_down() or keyboard_check(vk_down);
 var autozoom = keyboard_check_pressed(ord('C'));
-
 var offx = 0;
 var offy = 0;
-
 zoomspeed = zoomscale/room_speed;
 
-//Step
+//Inputs - Pan
+var border = 64;
+var mx = window_mouse_get_x();
+var my = window_mouse_get_y(); 
+var ww = window_get_width();
+var wh = window_get_height();
+var pan_speed = zoomscale*4;
 
+var bg0_speed = pan_speed*1.25;
+var bg7_speed = pan_speed/2;
+
+//Step - Pan
+if(mx &gt; ww-border)
+{
+    view_xview += pan_speed;
+    background_hspeed[7] = -bg7_speed;
+    background_hspeed[0] = -bg0_speed;
+}
+else if(mx &lt; border)
+{
+    view_xview -= pan_speed;
+    background_hspeed[7] = bg7_speed;
+    background_hspeed[0] = bg0_speed;
+}
+else if(my &gt; wh-border)
+{
+    view_yview += pan_speed;
+    background_vspeed[7] = -bg7_speed;
+    background_vspeed[0] = -bg0_speed;
+}
+else if(my &lt; border)
+{
+    view_yview -= pan_speed;
+    background_vspeed[7] = bg7_speed;
+    background_vspeed[0] = bg0_speed;
+}
+else
+{
+    background_vspeed[7] = 0;
+    background_vspeed[0] = 0;
+    background_hspeed[7] = 0;
+    background_hspeed[0] = 0;
+}
+
+
+
+
+//Step - Zoom
 if(zoom_in)
 {
     zoomscale -= zoomspeed;
@@ -160,8 +235,16 @@ view_hview = room_height*zoomscale;
         <arguments>
           <argument>
             <kind>1</kind>
-            <string>///Sun Activation
-instance_activate_region(view_xview,view_yview,view_xview+view_wview,view_yview+view_hview,true);
+            <string>///Controlls
+
+if(keyboard_check_pressed(vk_escape))
+{
+    game_end();
+}
+if(keyboard_check_pressed(ord('R')))
+{
+    room_restart();
+}
 </string>
           </argument>
         </arguments>
@@ -214,6 +297,10 @@ draw_set_color(c_maroon);
 draw_set_alpha(1);
 var vx=view_xview,vy=view_yview,vw=view_wview,vh=view_hview;
 draw_rectangle(vx/s,vy/s,vx/s+vw/s,vy/s+vh/s,true);
+
+draw_text_transformed(16,480,string(zoomscale),4,4,0);
+draw_text_transformed(16,544,"FPS: " + string(fps_real),4,4,0);
+draw_set_color(c_white);
 </string>
           </argument>
         </arguments>

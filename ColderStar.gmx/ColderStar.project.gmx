@@ -19,6 +19,7 @@
     <script>scripts\room_title.gml</script>
     <script>scripts\room_overspace.gml</script>
     <script>scripts\saveload.gml</script>
+    <script>scripts\orbit.gml</script>
     <script>scripts\generate_sun.gml</script>
     <scripts name="Essential Scripts">
       <scripts name="Drawing">
@@ -33,6 +34,7 @@
   <objects name="objects">
     <object>objects\director</object>
     <object>objects\o_sun</object>
+    <object>objects\o_planet</object>
   </objects>
   <rooms name="rooms">
     <room>rooms\overspace</room>
